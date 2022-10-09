@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //---------------------------
 
-if (exports !== "undefined") {
+if (typeof exports !== "undefined") {
   exports.ENConversion = ENConversion;
   exports.Page = Page;
 }
