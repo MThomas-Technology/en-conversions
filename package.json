@@ -1,0 +1,19 @@
+{
+  "name": "en-conversions",
+  "version": "1.0.0",
+  "description": "Track conversions on Engaging Networks pages",
+  "main": "/src/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.19.3",
+    "jest": "^29.1.2",
+    "jest-environment-jsdom": "^29.1.2"
+  }
+}
