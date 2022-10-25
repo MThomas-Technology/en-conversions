@@ -148,12 +148,6 @@ Page.prototype.isSamePageAs = function (page) {
 
 //---------------------------
 
-document.addEventListener("DOMContentLoaded", function () {
-  window.ENConversionLibrary = new ENConversion(window.pageJson);
-});
-
-//---------------------------
-
 if (typeof exports !== "undefined") {
   exports.ENConversion = ENConversion;
   exports.Page = Page;

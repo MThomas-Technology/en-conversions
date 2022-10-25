@@ -6,6 +6,14 @@
 
 To use the library, add the code from /src/index.js directly to your Engaging Networks template code header.
 
+Then, add the code below to your template to initalise the library:
+
+```js
+document.addEventListener("DOMContentLoaded", function () {
+  window.ENConversionLibrary = new ENConversion(window.pageJson);
+});
+```
+
 ### Handling conversions
 
 Once the library detects that a conversion has happened, it will dispatch several custom events:
@@ -18,7 +26,7 @@ Once the library detects that a conversion has happened, it will dispatch severa
 To handle a conversion, you can listen for these events in your template code and handle them according to your own needs (for example, sending the conversion to an analytics service):
 
 ```js
-window.addEventListener('synthetic-en:conversion', function() {
+window.addEventListener("synthetic-en:conversion", function() {
   // your code here
 });
 ```
@@ -39,6 +47,14 @@ To have the library dispatch a conversion event on a page where it normally woul
 <script>
   window.ENConversion_Convert = true;
 </script>
+```
+
+### Manually triggering a conversion
+
+If you wish to manually trigger a conversion, you can use the `convert` function of the library directly:
+
+```js
+window.ENConversionLibrary.convert()
 ```
 
 ## Tests
