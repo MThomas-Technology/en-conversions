@@ -10,7 +10,8 @@ beforeEach(() => {
 });
 
 describe("it does a conversion", () => {
-  test("if this is the last page", () => {
+  test("if this is the last page and previous page was of the same campaign", () => {
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
 
@@ -22,7 +23,32 @@ describe("it does a conversion", () => {
   });
 
   test("when redirected to a single page", () => {
-    const pageJson = pageJsons.singlePageWithRedirect;
+    new ENConversion(pageJsons.singlePageWithRedirect)
+    const pageJson = pageJsons.singlePage;
+    new ENConversion(pageJson);
+
+    const conversion = sessionStorage.getItem(
+      "ENConversion_Converted_" + pageJson.campaignId
+    );
+
+    expect(conversion).toBe("true");
+  });
+
+  test("when redirected to the last page of a campaign", () => {
+    new ENConversion(pageJsons.singlePageWithRedirect)
+    const pageJson = pageJsons.lastPage;
+    new ENConversion(pageJson);
+
+    const conversion = sessionStorage.getItem(
+      "ENConversion_Converted_" + pageJson.campaignId
+    );
+
+    expect(conversion).toBe("true");
+  });
+
+  test("when redirected to a static page", () => {
+    new ENConversion(pageJsons.singlePageWithRedirect)
+    const pageJson = pageJsons.staticPage;
     new ENConversion(pageJson);
 
     const conversion = sessionStorage.getItem(
@@ -45,6 +71,8 @@ describe("it does a conversion", () => {
   });
 
   test("for multiple campaigns completed in the same session", () => {
+    const firstPageJson = pageJsons.firstPage
+    new ENConversion(firstPageJson);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
 
@@ -54,10 +82,35 @@ describe("it does a conversion", () => {
 
     expect(conversion).toBe("true");
 
+    firstPageJson.campaignId = "12345";
     pageJson.campaignId = "12345";
+    new ENConversion(firstPageJson);
     new ENConversion(pageJson);
 
     conversion = sessionStorage.getItem("ENConversion_Converted_12345");
+
+    expect(conversion).toBe("true");
+  });
+
+  test("for the same campaign being completed multiple times in the same session", () => {
+    new ENConversion(pageJsons.firstPage);
+    const pageJson = pageJsons.lastPage;
+    new ENConversion(pageJson);
+
+    let conversion = sessionStorage.getItem(
+      "ENConversion_Converted_" + pageJson.campaignId
+    );
+
+    expect(conversion).toBe("true");
+
+    sessionStorage.clear();
+
+    new ENConversion(pageJsons.firstPage);
+    new ENConversion(pageJson);
+
+    conversion = sessionStorage.getItem(
+      "ENConversion_Converted_" + pageJson.campaignId
+    );
 
     expect(conversion).toBe("true");
   });
@@ -75,7 +128,7 @@ describe("it does NOT do a conversion", () => {
     expect(conversion).toBeNull();
   });
 
-  test("on a single page without a redirect present (a landing page)", () => {
+  test("on a single page without being redirected to it (a landing page)", () => {
     const pageJson = pageJsons.singlePage;
     new ENConversion(pageJson);
 
@@ -86,8 +139,9 @@ describe("it does NOT do a conversion", () => {
     expect(conversion).toBeNull();
   });
 
-  test("if redirected to a multiple pages page", () => {
-    const pageJson = pageJsons.multiplePagesWithRedirect;
+  test("when redirected to a page that is not a single page, or the last page.", () => {
+    new ENConversion(pageJsons.singlePageWithRedirect)
+    const pageJson = pageJsons.middlePage;
     new ENConversion(pageJson);
 
     const conversion = sessionStorage.getItem(
@@ -97,9 +151,10 @@ describe("it does NOT do a conversion", () => {
     expect(conversion).toBeNull();
   });
 
-  test("on a page that has already been converted on", () => {
+  test("when a page where a conversion has happened is refreshed", () => {
     const spy = jest.spyOn(ENConversion.prototype, "convert");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
     new ENConversion(pageJson);
@@ -124,6 +179,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion event when any conversion happens", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
 
@@ -141,6 +197,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion:{pageType} event when a conversion happens", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
 
@@ -158,6 +215,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion:group:donation event when a conversion happens on a donation page type", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.lastPage;
     new ENConversion(pageJson);
 
@@ -175,6 +233,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion:group:donation event when a conversion happens on a premiumgift page type", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.premiumGift;
     new ENConversion(pageJson);
 
@@ -192,6 +251,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion:group:donation event when a conversion happens on a ecommerce page type", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.ecommerce;
     new ENConversion(pageJson);
 
@@ -209,6 +269,7 @@ describe("It fires a custom event", () => {
   test("synthetic-en:conversion:group:submission event when a conversion happens on any other page type", () => {
     const dispatchEventSpy = jest.spyOn(window, "dispatchEvent");
 
+    new ENConversion(pageJsons.firstPage);
     const pageJson = pageJsons.advocacyPetition;
     new ENConversion(pageJson);
 

@@ -3,12 +3,18 @@
 function ENConversion(pageJson) {
   //Load our Page objects
   this.pages = this.getPagesLog();
-  this.previousPage = this.pages[this.pages.length - 1] || null;
+  this.previousPage = this.pages[this.pages.length - 1] || new Page({});
   this.currentPage = new Page(pageJson);
+
+  //Stop here if same page as previous page (reload, validation errors etc)
+  if (this.currentPage.isSamePageAs(this.previousPage)) {
+    return;
+  }
+
   this.updatePagesLog();
 
-  //Stop here if already converted or using global override
-  if (this.hasAlreadyConverted() || window.ENConversion_DontConvert) {
+  //Stop here if using global override
+  if (window.ENConversion_DontConvert) {
     return;
   }
 
@@ -22,17 +28,20 @@ function ENConversion(pageJson) {
 }
 
 ENConversion.prototype.checkForConversion = function () {
+  //last page of multiple pages without a redirect
   if (
-    //last page of multiple pages without a redirect
     this.currentPage.isLastPage() &&
     this.currentPage.hasMoreThanOnePage() &&
+    this.currentPage.isSameCampaignAs(this.previousPage) &&
     !this.currentPage.hasRedirect()
   ) {
     this.convert();
-  } else if (
-    //single page with redirect
-    this.currentPage.isSinglePage() &&
-    this.currentPage.hasRedirect()
+  }
+  
+  //redirected and end of process
+  if (
+    this.previousPage.hasRedirect() &&
+    (this.currentPage.isSinglePage() || this.currentPage.isLastPage() || this.currentPage.isStaticPage())
   ) {
     this.convert();
   }
@@ -135,15 +144,37 @@ Page.prototype.hasPagesLeft = function () {
   return this.pageJson.pageNumber < this.pageJson.pageCount;
 };
 
+Page.prototype.isStaticPage = function () {
+  return this.pageJson.pageType === 'staticpage';
+}
+
 /**
- * A page to compare this page to
- * @param {Page} page
+ * Check if another page is the same page as this page
+ * @param {Page|null} page A Page to compare this page to
+ * @returns {boolean}
  */
 Page.prototype.isSamePageAs = function (page) {
+  if (!page) {
+    return false;
+  }
+
   return (
     this.pageJson.campaignPageId === page.pageJson.campaignPageId &&
     this.pageJson.pageNumber === page.pageJson.pageNumber
   );
+};
+
+/**
+ * Check if another page is of the same campaign as this page
+ * @param {Page|null} page A Page to compare this page to
+ * @returns {boolean}
+ */
+Page.prototype.isSameCampaignAs = function (page) {
+  if (!page) {
+    return false;
+  }
+
+  return this.pageJson.campaignPageId === page.pageJson.campaignPageId;
 };
 
 //---------------------------

@@ -17,6 +17,15 @@ exports.pageJsons = {
     redirectPresent: false,
     supporterId: 111111111,
   },
+  middlePage: {
+    campaignPageId: 112817,
+    campaignId: 260702,
+    pageNumber: 2,
+    pageCount: 3,
+    pageType: "donation",
+    redirectPresent: false,
+    supporterId: 111111111,
+  },
   singlePage: {
     campaignPageId: 112817,
     campaignId: 260702,
@@ -27,7 +36,7 @@ exports.pageJsons = {
     supporterId: 111111111,
   },
   singlePageWithRedirect: {
-    campaignPageId: 112817,
+    campaignPageId: 111111,
     campaignId: 260702,
     pageNumber: 1,
     pageCount: 1,
@@ -42,6 +51,15 @@ exports.pageJsons = {
     pageCount: 3,
     pageType: "donation",
     redirectPresent: true,
+    supporterId: 111111111,
+  },
+  staticPage: {
+    campaignPageId: 112817,
+    campaignId: 260702,
+    pageNumber: 1,
+    pageCount: 2,
+    pageType: "staticpage",
+    redirectPresent: false,
     supporterId: 111111111,
   },
   premiumGift: {
